@@ -1,0 +1,13 @@
+name: RankingGMsFantasyHockey
+title: RankingGMsFantasyHockey
+username:
+account: mbcalles
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1411028
+bundleId: 2557281
+url: https://mbcalles.shinyapps.io/RankingGMsFantasyHockey/
+when: 1572625311.23661
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: FantasyHockeyResults2014-2016.csv
