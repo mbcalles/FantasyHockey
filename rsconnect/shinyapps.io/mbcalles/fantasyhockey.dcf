@@ -1,13 +1,12 @@
-name: fantasyhockey
-title:
+name: FantasyHockey
+title: FantasyHockey
 username:
 account: mbcalles
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 225020
-bundleId: 1500823
+bundleId: 3769252
 url: https://mbcalles.shinyapps.io/fantasyhockey/
-when: 1532565966.75293
+when: 1603346115.77568
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: FantasyHockeyResults2014-2016.csv
