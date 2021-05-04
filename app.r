@@ -26,9 +26,9 @@ ui <- fluidPage(
            If in each year I divide the points obtained by the end of the regular season and divide by the maximum number of points I have a winning percentage
            comparable year to year. Now that I have a standardized measure for each year I can compare GMs with differing lengths of tenure by dividing the
            sum of the total number of points by the total number of maximum points for each year you were in the league."),
-    tags$p("Here is the raw data for GM performance over the years:"),
+    tags$p("Here is a summary of GM performance in regular season and playoffs from 2014/15 to 2020/21:"),
 
-    DT::dataTableOutput("mytable"),
+    DT::dataTableOutput("regseasonsummary"),
 
       tags$p("I can then rank GMs through measures of deviance, that is how much better or worse than the average performance you are. Here I quantify
            regular season performance through Z-scores, which is a way of comparing how much better or worse a GMs average performance is than the league average performance.
@@ -81,19 +81,22 @@ top finishes in playoffs")
 #
 server <- function(input, output) {
 
-  results <- read_csv("FantasyHockeyResults2014-2017.csv") %>% separate(WLT,c("WINS","LOSSES","TIES"),convert=TRUE) %>%
-    mutate(NUM_CAT= ifelse(YEAR==2014,10,NA),
-                      NUM_WEEKS = ifelse(YEAR==2014,22,NA)) %>%
-    mutate(NUM_CAT= ifelse(YEAR==2015,12,NUM_CAT),
-           NUM_WEEKS = ifelse(YEAR==2015,21,NUM_WEEKS)) %>%
-    mutate(NUM_CAT= ifelse(YEAR==2016,13,NUM_CAT),
-           NUM_WEEKS = ifelse(YEAR==2016,20,NUM_WEEKS))  %>%
+  results <- read_csv("FantasyHockeyResults.csv") %>%
+    separate(WLT,c("WINS","LOSSES","TIES"),convert=TRUE) %>%
+    mutate(NUM_CAT= ifelse(YEAR==2015,10,NA),
+                      NUM_WEEKS = ifelse(YEAR==2015,22,NA)) %>%
+    mutate(NUM_CAT= ifelse(YEAR==2016,12,NUM_CAT),
+           NUM_WEEKS = ifelse(YEAR==2016,21,NUM_WEEKS)) %>%
     mutate(NUM_CAT= ifelse(YEAR==2017,13,NUM_CAT),
            NUM_WEEKS = ifelse(YEAR==2017,20,NUM_WEEKS))  %>%
     mutate(NUM_CAT= ifelse(YEAR==2018,13,NUM_CAT),
            NUM_WEEKS = ifelse(YEAR==2018,20,NUM_WEEKS))  %>%
     mutate(NUM_CAT= ifelse(YEAR==2019,13,NUM_CAT),
-           NUM_WEEKS = ifelse(YEAR==2019,21,NUM_WEEKS))  %>%
+           NUM_WEEKS = ifelse(YEAR==2019,20,NUM_WEEKS))  %>%
+    mutate(NUM_CAT= ifelse(YEAR==2020,13,NUM_CAT),
+           NUM_WEEKS = ifelse(YEAR==2020,21,NUM_WEEKS))  %>%
+    mutate(NUM_CAT= ifelse(YEAR==2021,13,NUM_CAT),
+           NUM_WEEKS = ifelse(YEAR==2021,13,NUM_WEEKS))  %>%
     mutate(MAX_PTS = NUM_CAT*2*NUM_WEEKS) %>%
     mutate(MAX_PTS_PERCENTAGE = round(PTS/MAX_PTS*100,1))
 
@@ -103,6 +106,25 @@ server <- function(input, output) {
     results
   })
 
+  summary <- results %>%
+    group_by(TEAM) %>%
+    summarize(seasons = n(),
+              total_points=sum(PTS,na.rm=TRUE),
+              total_possible_points = sum(MAX_PTS,na.rm=TRUE),
+              total_points_percentage = round(total_points/total_possible_points*100,2),
+              times_made_playoffs = seasons - (sum(RANK>6 & YEAR==2015) + sum(RANK>8 & YEAR>2015,na.rm = TRUE)),
+              times_made_finals = sum(RANK<=2,na.rm=TRUE),
+              total_championships = sum(RANK==1,na.rm=TRUE)
+    ) %>%
+    arrange(desc(total_points_percentage))
+
+
+  output$regseasonsummary = DT::renderDataTable({
+
+    summary
+
+
+  })
 
   output$regseason <- renderPlot({
 
@@ -145,10 +167,10 @@ server <- function(input, output) {
     scale_color_manual(values = c("All Time Greats"="#1A9850",
                                   "One Hit Wonders"="#6BAED6",
                                   "Underachievers"="#FDAE61",
-                                 "Overall Poor Performers"="#A50026"))+ theme_fivethirtyeight() +
+                                 "Overall Poor Performers"="#A50026")) + theme_minimal() +
     theme(axis.title = element_text()) +
     scale_size_continuous(name="GM Tenure",range = c(2,6),
-                          breaks = c(1,2,3,4)) +
+                          breaks = c(1,2,3,4,5,6,7)) +
     labs(y="Playoff Z-Score",
          x="Regular Season Z-Score")
 

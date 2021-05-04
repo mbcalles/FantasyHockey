@@ -5,8 +5,9 @@ account: mbcalles
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1411028
-bundleId: 2557376
+bundleId: 4553958
 url: https://mbcalles.shinyapps.io/RankingGMsFantasyHockey/
-when: 1572627398.90844
+when: 1620109603.12036
+lastSyncTime: 1620109603.12036
 asMultiple: FALSE
 asStatic: FALSE
